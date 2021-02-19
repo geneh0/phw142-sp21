@@ -1,0 +1,123 @@
+---
+title: "PHW142 Lab 0"
+author: "Your Name"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+
+## Welcome 
+
+Welcome to PHW142: Introduction to Probability and Statistics in Biology and Public Health. For many of you, this will be your first foray into biostatistics every. For others, you may have been working in R for several years. No matter your experience level, the teaching team hopes to guide you through this learning experience. Please don't hesitate to reach out to anyone on the teaching team if any questions or issues arise throughout this term. 
+
+# What is R? 
+
+R is an open-source statistical programming language.
+
+# What is R Studio? 
+
+R Studio is an "integrated development environment," or IDE, that allows you to run R on your computer (or in the cloud!) and create scripts and see your output all in one program! For this class, it is important that we download the desktop version of R Studio so that you can access the software at any time, regardless of your internet connection. 
+
+## Side Note: Code Chunks
+
+R Markdown (RMD) files can be interspersed between normal "text" (like this) and code chunks, which contain code. In a typical workflow, you can use RMD files to generate reports or simply have a place to document and write your code. Another benefit of using RMDs is that the output for a particular cell will be displayed immediately below it's code chunk. 
+
+Code chunks are delineated by: 
+`` ```{r} ...``` ``
+
+ - start: three backticks (top left key on your keyboard, to the right of "1") and '{r}'
+ - end: three more backticks
+ 
+
+```{r}
+# lines prefaced with a '#' are comments and will not be read 
+# as code in R. use it to annotate/comment on your code!
+
+# if viewing as an RMD (not PDF)
+# the icons at the top right of the chunk are: 
+#  - chunk settings
+#  - run all previous chunks until this one 
+#  - run this chunk 
+```
+
+Also, break your code into lines of approximately 80 characters so it doesn't run off the page when you export. We won't be able to read code that goes off the page! You can try it out by combinining lines 36-37. 
+
+# Setup
+
+We will be installing everything from the official websites to ensure our software is up-to-date. There are two components to install: R and R Studio. As mentioned above, they are two separate things, as R Studio is used to access or utilize the R programming language. Because of this, there will be two steps to installation. You will need administrator privileges to install these programs. Please reach out to the teaching team if you do not have the correct privileges. 
+
+## Installing R
+
+1. Go to https://cloud.r-project.org/ in your web browser of choice (e.g. Chrome, Firefox, Safari).
+2. In the upper box titled "Download and Install R," click the link that corresponds to your operating system. 
+3. Install the program like you would any other by clicking and following the instructions in the dialog box. 
+
+## Installing R Studio
+
+1. Go to https://rstudio.com/products/rstudio/download/#download in your web browser of choice. 
+2. Click the blue box that says "Download RStudio for [your operating system]" 
+3. Install the program like you would any other by clicking and following the instructions in the dialog box. 
+
+### Installing R Studio Dependencies
+
+When installing R Studio for the first time, you may need to install additional software for it to work. Depending on what other programs you have installed, this part may or may not apply to you. When following the instructions in this part, please make sure the previous step finishes completely. You will know the tasks has completed or failed once you see a blue ">" and a blinking cursor in the console (lower left box). 
+
+1. A popup may appear asking you to install *git*. Click *Install*. It is not necessary to install all of Xcode. 
+2. Near the top of the Source pane (top left box), there should be a bar that says 'knitr package is not installed'. Click Install. 
+3. Download the RMD version of this document here (INSERT LINK). 
+4. Run this code chunk by clicking on the green play button on the next line. 
+
+```{r eval = F}
+# click on the green play button on the right side of line 49
+# (assuming you didn't change anything in this R Markdown file)
+# you should only ever have to run this code one time 
+# so we will spare you the technical details
+install.packages('rmarkdown')
+install.packages('tinytex')
+tinytex::install_tinytex()
+```
+
+5. Click "Knit" or "Knit to PDF" in the toolbar above the Source pane. 
+6. If if you are successfully able to generate a PDF of this document, continue to the section titled, "Submission". If not, proceed to the next section. 
+
+### Troubleshooting: Installing Latex
+
+Only follow this section if you weren't able to create a PDF in the previous section. 
+
+
+# Adobe Acrobat
+
+We will be using form fillable PDFs for your problem sets. This will help standardize the formatting of your submissions as well as help the teaching team return your assignments faster.It is **required** that you use Adobe Acrobat to complete the problem sets. Not all components of the PDF work in other programs (e.g. inserting graph as an image), so we will require all students to complete their problem sets with Acrobat. Luckily, all students get the entire Adobe Creative Cloud Suite (which includes Adobe Acrobat) for free while they are a student at UC Berkeley. We will be unable to troubleshoot technical issues if you don't use Adobe Acrobat. 
+
+## Installing Adobe Acrobat
+
+Go to https://software.berkeley.edu/adobe-creative-cloud and follow the instructions for your computer's operating system. 
+
+
+# 
+
+
+# Submitting
+
+In this class, we will be using Gradescope to submit and grade your assignments and exams. If you haven't already, you will likely encounter this website in future quantitative courses (e.g. epidemiology courses). When working off an R Markdown file, it is imperative that you **do not** remove any `\newpage` tags from the file nor chunks of code/original text. This will cause issues for the teaching team and can impact  your grade and assignment turn around time. 
+
+To show that you have successfully completed this lab, please type the following functions in the code chunk below. Then, knit this R Markdown file to PDF. This will confirm that everything is correctly installed on your computer. 
+
+The backticks are used to style the text appropriately in the PDF, so do not copy it into the code chunk or it will not run. You will learn more about it later in the course, but make sure to include the opening and closing parentheses, which indicate to R that it is a function to run. 
+
+- `Sys.time()`
+- `Sys.info()`
+  - When approaching the teaching team about technical problems with R or RStudio, please have the output from the function in the line above ready so we can debug accordingly.
+
+```{r}
+# input the two functions into this code chunk
+# click the green play button on line 90
+# verify that there is output below this code chunk
+
+```
+
