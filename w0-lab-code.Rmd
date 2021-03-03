@@ -1,0 +1,39 @@
+---
+title: "Lab 0 Code"
+author: "PHW142"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source('0-setup.R')
+```
+
+This document contains the code necessary to complete Lab 0. Copy and paste the output into the Lab 0 PDF. You do not need to submit this RMD file. 
+
+Question 1. 
+```{r}
+Sys.info()
+
+R.Version()
+```
+
+
+Question 2. 
+```{r}
+library(epitools)
+library(ggplot2)
+
+data(wcgs)
+
+# create a scatterplot of 
+# height on the x-axis 
+# (rounded to the nearest inch, hence the vertical strips)
+# weight on the y-axis
+# in lbs
+
+ggplot(data = wcgs) + 
+  geom_point(aes(x = height0, 
+                 y = weight0))
+```
+
