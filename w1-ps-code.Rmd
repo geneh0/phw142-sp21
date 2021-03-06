@@ -12,7 +12,7 @@ output:
 **This R Markdown file assumes you went through the Week 1 R Tutorial first**
 
 ```{r}
-source('0-source.R')
+source('0-setup.R')
 ```
 
 ```{r set libraries and read in data }
