@@ -11,6 +11,10 @@ output:
 
 **This R Markdown file assumes you went through the Week 1 R Tutorial first**
 
+```{r}
+source('0-source.R')
+```
+
 ```{r set libraries and read in data }
 library(ggplot2)
 library(dplyr)
@@ -23,9 +27,6 @@ library(knitr)
 data(wcgs)
 ```
 
-```{r}
-source('0-source.R')
-```
 
 ```{r variables we made in the Week 1 R Tutorial}
 wcgs$dibpat0_fact <- factor(wcgs$dibpat0, ordered = TRUE, labels = c("A","B"))
