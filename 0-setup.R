@@ -9,3 +9,5 @@ if(!require(exact2x2)) install.packages("exact2x2")
 if(!require(DescTools)) install.packages("DescTools")
 if(!require(MESS)) install.packages("MESS")
 if(!require(pwr)) install.packages("pwr")
+if(!require(NHANES)) install.packages("NHANES")
+
