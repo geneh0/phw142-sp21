@@ -5,8 +5,12 @@ date: "February 22, 2019"
 ---
 
 ```{r load packages}
-
 source(here::here('0-setup.R'))
+
+# uncomment below if you are **not** running
+# this script in R DataHub
+# library(dplyr)
+# library(readxl)
 ```
 
 
