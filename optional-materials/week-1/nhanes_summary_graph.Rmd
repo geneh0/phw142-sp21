@@ -1,0 +1,150 @@
+---
+title: "NHANES Summary Graphs"
+author: "PHW142"
+date: "3/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source(here::here('0-setup.R'))
+
+nhanes <- read_excel("nhanes_adult_1516.xlsx", col_names = TRUE)
+```
+
+```{r}
+# clean data to show category names
+# instead of numbered levels
+nhanes$gender_factor = factor(nhanes$riagendr,
+      labels = c("men", "women"))
+
+nhanes$ed_lvl_factor = factor(nhanes$educ_level, 
+     labels = c("lt hs", "some hs", "hs grad","some coll", "coll grad") )   
+     
+nhanes$age_cat_factor = factor(nhanes$age_cat,
+       labels = c("20 to 34","35 to 49","50 to 64","65 and older"))   
+```
+
+
+```{r 5 number summary and average and standard deviaton for systolic blood pressure}
+
+# this function handles the missing values gracefully
+
+summary(nhanes$bpxsy1)
+
+#  but these do not --try them to see what you get:
+
+mean(nhanes$bpxsy1)
+sd(nhanes$bpxsy1)
+
+# here is what we need; na.rm says to remove, or ignore, missing values
+
+mean(nhanes$bpxsy1, na.rm = TRUE)
+sd(nhanes$bpxsy1, na.rm = TRUE)
+
+# it is a good idea to add the argument that asks the calculations to ignore missing
+
+nhanes %>% summarize(
+    min = min(bpxsy1, na.rm = TRUE) ,
+    q1 = sprintf("%0.2f", quantile(bpxsy1, na.rm = TRUE, 0.25))  ,
+    median = sprintf("%0.2f", quantile(bpxsy1, na.rm = TRUE, 0.50)) ,
+    q3 = sprintf("%0.2f", quantile(bpxsy1, na.rm = TRUE, 0.75)) ,
+    max = max(bpxsy1, na.rm = TRUE)
+)
+
+nhanes %>% summarize(
+    ave = sprintf("%0.2f", mean(bpxsy1, na.rm = TRUE) ) ,
+    std_dev = sprintf("%0.2f",sd(bpxsy1, na.rm = TRUE) )
+)
+```
+
+```{r}
+# 5 number summaries and average and standard deviaton separately for men and women
+# using subsetting in base R
+
+summary(nhanes$bpxsy1[nhanes$gender_factor=="men"])
+summary(nhanes$bpxsy1[nhanes$gender_factor=="women"])
+ 
+mean(nhanes$bpxsy1[nhanes$gender_factor=="men"], na.rm = TRUE)
+sd(nhanes$bpxsy1[nhanes$gender_factor=="men"], na.rm = TRUE)
+
+mean(nhanes$bpxsy1[nhanes$gender_factor=="women"], na.rm = TRUE)
+sd(nhanes$bpxsy1[nhanes$gender_factor=="women"], na.rm = TRUE)
+     
+# histograms for systolic blood pressure
+# we'll get warnings about the missing values
+
+ggplot(nhanes, aes(x = bpxsy1)) +
+  geom_histogram(binwidth = 5, aes(y = (..count..)/sum(..count..))) +
+  scale_x_continuous(name = "systolic blood pressure in mm Hg") +
+  scale_y_continuous(name = "proportion") +
+  labs(title = "US adults age 20 and over", subtitle = "NHANES 2015-2016") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) 
+  
+#with ..density.. instead of the formula
+ggplot(nhanes, aes(x = bpxsy1)) +
+  geom_histogram(binwidth = 5, aes(y =..density..), color = "black", fill = "purple") +
+  scale_x_continuous(name = "systolic blood pressure in mm Hg") +
+  scale_y_continuous(name = "density") +
+  labs(title = "US adults age 20 and over", subtitle = "NHANES 2015-2016") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) 
+
+
+# do with counts
+
+ggplot(nhanes, aes(x = bpxsy1)) +
+  geom_histogram(binwidth = 5 ) +
+  facet_wrap(nhanes$gender_factor) +
+  scale_x_continuous(name = "systolic blood pressure in mm Hg") +
+  scale_y_continuous(name = "count") +
+  labs(title = "US adults age 20 and over", subtitle = "NHANES 2015-2016") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) 
+  
+
+# side by side histograms for the men and women 
+
+ggplot(nhanes, aes(x = bpxsy1, y = ..density..)) +
+  geom_histogram(binwidth = 5, color = "black", fill = "red") +
+  facet_wrap(nhanes$gender_factor) +
+  scale_x_continuous(name = "systolic blood pressure in mm Hg") +
+  scale_y_continuous(name = "density") +
+  labs(title = "NHANES 2015-2016 US adults age 20 and over", subtitle = "NHANES 2015-2016") +
+   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) 
+   
+# side by side boxplots for men and women
+
+ggplot(nhanes, aes(y = bpxsy1)) +
+  geom_boxplot() +
+  facet_wrap(nhanes$gend_fact) +
+  scale_x_continuous(labels = NULL) +
+  scale_y_continuous(name = "systolic bp in mm Hg") +
+  labs(title = "US adults age 20 and over", subtitle = "NHANES 2015-2016") +
+   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) 
+
+
+# data frame for the men only
+
+sys_bp <- select(nhanes,riagendr,bpxsy1)
+sys_bp_men <- filter(sys_bp, riagendr == 1)
+
+#histogram of sys bp for the men
+
+ggplot(sys_bp_men, aes(x = bpxsy1, y = ..density..) ) +
+  geom_histogram(binwidth = 5, color = "black", fill = "purple") +
+    scale_x_continuous(name = "systolic blood pressure in mm Hg") +
+     scale_y_continuous(name = "density") +
+     labs(title = "NHANES 2015-2016 US men age 20 and over") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+#boxplot of sys bp for the men
+
+ggplot(sys_bp_men, aes(y = bpxsy1) ) +
+  geom_boxplot(width = 0.5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "systolic bp in mm Hg",       
+         x = "", title = "NHANES 2015-12016 US men age 20 and over") +
+  theme(plot.title = element_text(hjust = 0.5))
+  
+quantile(sys_bp_men$bpxsy1, probs = c(0.25, 0.50, 0.75), type = 5, na.rm = TRUE)  
+
+```
+

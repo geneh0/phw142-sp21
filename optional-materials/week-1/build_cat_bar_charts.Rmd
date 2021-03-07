@@ -1,0 +1,105 @@
+---
+title: "bar charts for categorical variables"
+author: "Maureen Lahiff"
+date: "February 21, 2020"
+output: word_document
+---
+
+```{r}
+source(here::here('0-setup.R'))
+
+# read in the data
+nhanes <- readxl::read_xlsx('nhanes_adult_1516.xlsx') %>% 
+        # cleaning the data
+        # see build_cat_tables.Rmd for more detail
+        mutate(gender_factor = factor(gender, 
+                                      labels = c('male', 'female')), 
+               age_cat_factor = factor(educ_level, 
+                                       labels = c("lt hs", "some hs", "hs grad",
+                                                  "some coll", "coll grad")),
+               ed_lvl_factor = factor(age_cat,
+                                      labels = c("20 to 34","35 to 49",
+                                                 "50 to 64","65 and older")) )
+        
+```
+
+
+# the table commands handled missing observations gracefully
+# in the Global Environment, you can see that nhanes has 5719 observations
+# however, the total for the tables we made with education level is 5714 obervations
+
+# many, if not most, R functions are not so nice
+
+# ggplot will create a separate category for the 5 missing values of rel_stat
+# which is unlikely to be what we want
+
+# to deal with this, create a new data frame with these rows removed
+
+```{r create a smaller data frame and then remove rows with missing values}
+
+educ_age_gender <- select(nhanes, gender_factor, age_cat_factor, ed_lvl_factor)
+
+educ_age_gender_nomiss <- na.omit(educ_age_gender, cols = "ed_lvl_factor")
+
+```
+
+
+```{r vertical bar chart for education level}
+
+ggplot(educ_age_gender_nomiss, 
+       aes(x = ed_lvl_factor) ) +
+        geom_bar(aes(y = (..count..)/sum(..count..) ), width = .5) +
+        labs(x = "highest education level", y = "proportion",
+             title = "NHANES 2015-2016 adults age 20+") +
+        theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+```{r side by side bar charts with proportions by gender, version 1}
+
+educ_age_gender_nomiss %>% 
+        count(gender_factor, ed_lvl_factor) %>%
+        group_by(gender_factor) %>%
+        mutate(prop = n/sum(n)) %>%
+        # the pipe operator (%>%) automatically inserts the dataframe created above
+        # as the first argument of the ggplot function below
+        ggplot(aes(x = ed_lvl_factor, y = prop, width = .5, fill = gender_factor)) +
+        geom_bar(stat = "identity", position = "dodge") +
+        labs(y = "proportion", x = "", title = "highest education level NHANES 2015-2016") +
+        theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+
+```{r side by side bar charts with proportions by gender, version 2 horizontal}
+
+educ_age_gender_nomiss %>% 
+        count(gender_factor, ed_lvl_factor) %>%
+        group_by(gender_factor) %>%
+        mutate(prop = n/sum(n))  %>%
+        # notice that ggplot uses + to "add" elements to the graph
+        # versus using the pipe operator
+        ggplot(aes(x = gender_factor, y = prop, width = .5, fill = ed_lvl_factor)) +
+        geom_bar(stat = "identity", position = "dodge") + coord_flip() +
+        labs(y = "proportion", x = "", title = "highest education level NHANES 2015-2016") +
+        theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+```{r stacked bars}
+
+#statisticians find these much less useful!
+
+educ_age_gender_nomiss %>% 
+        count(gender_factor, ed_lvl_factor) %>%
+        group_by(gender_factor) %>%
+        mutate(prop = n/sum(n))  %>%
+        ggplot(aes(x = gender_factor, y = prop, width = .5, fill = ed_lvl_factor)) +
+        geom_bar(stat = "identity") +
+        labs(y = "proportion", x = "", title = "highest education level NHANES 2015-2016") +
+        theme(plot.title = element_text(hjust = 0.5))
+
+```
+

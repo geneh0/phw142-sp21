@@ -1,0 +1,87 @@
+---
+title: "build one and two way summary tables for categorical variables"
+author: "Maureen Lahiff"
+date: "February 22, 2019"
+---
+
+```{r load packages}
+
+source(here('0-setup.R'))
+```
+
+
+```{r read in NHANES data}
+nhanes <- read_excel("nhanes_adult_1516.xlsx", col_names = TRUE)
+
+# create factor variables
+
+nhanes$gender_factor = factor(nhanes$riagendr,
+       labels = c("men", "women"))
+
+nhanes$ed_lvl_factor = factor(nhanes$educ_level, 
+      labels = c("lt hs", "some hs", "hs grad","some coll", "coll grad") ) 
+
+ 
+nhanes$age_cat_factor = factor(nhanes$age_cat,
+      labels = c("20 to 34","35 to 49","50 to 64","65 and older"))      
+
+```
+
+```{r create one-way tables for gender, education level, and age category}
+
+#table with percents of men and women
+gender_table <- table(nhanes$gender_factor)
+# add total count to table
+addmargins(gender_table)
+prop.table(gender_table)
+# to get nicer looking proportions
+round(prop.table(gender_table),digits=3)
+
+#percents for educ level category
+educ_table <- table(nhanes$ed_lvl_factor)
+addmargins(educ_table)
+round(prop.table(educ_table), digits=3)
+
+#percents for age category
+age_table <- table(nhanes$age_cat_factor)
+addmargins(age_table)
+round(prop.table(age_table), digits=3)
+
+#two-way tables for these variables
+
+#education level by gender
+gender_educ_table <- table(nhanes$gender_factor, nhanes$ed_lvl_factor)
+addmargins(gender_educ_table)
+#get row percents
+round(prop.table(gender_educ_table, 1), digits=3)
+
+#education level by age category
+age_educ_table <- table(nhanes$age_cat_factor, nhanes$ed_lvl_factor)
+addmargins(age_educ_table)
+round(prop.table(age_educ_table, 1), digits=3)
+
+#tables for systolic blood pressure categories
+#using the cut function to code the categories
+
+nhanes$sbp_cat <- cut(nhanes$bpxsy1, breaks = c(0, 120, 130, 140, 160, 180, Inf), include.lowest = TRUE, right = FALSE, ordered_results = TRUE, labels = c("< 120", "120 to 130", "130 to 140", "140 to 160", "160 to 180", ">= 180") )
+
+sbp_cat_table <- table(nhanes$sbp_cat)
+addmargins(sbp_cat_table)
+round(prop.table(sbp_cat_table), digits=3)
+
+# get cumulative frequencies
+sbp_cat_cum <- cum_proportion <- cumsum(sbp_cat_table)/sum(sbp_cat_table)
+round(sbp_cat_cum, digits = 3)
+
+#blood pressure categories by gender
+sbp_cat_gender_table <- table(nhanes$gender_factor, nhanes$sbp_cat)
+addmargins(sbp_cat_gender_table)
+#get row percents
+round(prop.table(sbp_cat_gender_table,1), digits=3)
+```
+
+
+
+
+
+
