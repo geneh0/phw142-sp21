@@ -96,7 +96,7 @@ ggplot(nhanes, aes(x = bpxsy1)) +
 
 ggplot(nhanes, aes(x = bpxsy1)) +
   geom_histogram(binwidth = 5 ) +
-  facet_wrap(nhanes$gender_factor) +
+  facet_wrap(~ gender_factor) +
   scale_x_continuous(name = "systolic blood pressure in mm Hg") +
   scale_y_continuous(name = "count") +
   labs(title = "US adults age 20 and over", subtitle = "NHANES 2015-2016") +
@@ -107,7 +107,7 @@ ggplot(nhanes, aes(x = bpxsy1)) +
 
 ggplot(nhanes, aes(x = bpxsy1, y = ..density..)) +
   geom_histogram(binwidth = 5, color = "black", fill = "red") +
-  facet_wrap(nhanes$gender_factor) +
+  facet_wrap(~ gender_factor) +
   scale_x_continuous(name = "systolic blood pressure in mm Hg") +
   scale_y_continuous(name = "density") +
   labs(title = "NHANES 2015-2016 US adults age 20 and over", subtitle = "NHANES 2015-2016") +
@@ -117,7 +117,7 @@ ggplot(nhanes, aes(x = bpxsy1, y = ..density..)) +
 
 ggplot(nhanes, aes(y = bpxsy1)) +
   geom_boxplot() +
-  facet_wrap(nhanes$gender_factor) +
+  facet_wrap(~ gender_factor) +
   scale_x_continuous(labels = NULL) +
   scale_y_continuous(name = "systolic bp in mm Hg") +
   labs(title = "US adults age 20 and over", subtitle = "NHANES 2015-2016") +
