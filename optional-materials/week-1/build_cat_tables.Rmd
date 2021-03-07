@@ -6,7 +6,7 @@ date: "February 22, 2019"
 
 ```{r load packages}
 
-source(here('0-setup.R'))
+source(here::here('0-setup.R'))
 ```
 
 

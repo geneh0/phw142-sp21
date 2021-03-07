@@ -8,6 +8,8 @@ output: word_document
 ```{r}
 source(here::here('0-setup.R'))
 
+library(tidyverse)
+
 # read in the data
 nhanes <- readxl::read_xlsx('nhanes_adult_1516.xlsx') %>% 
         # cleaning the data

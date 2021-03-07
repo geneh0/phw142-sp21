@@ -8,6 +8,9 @@ output: html_document
 ```{r setup, include=FALSE}
 source(here::here('0-setup.R'))
 
+library(tidyverse)
+library(readxl)
+
 nhanes <- read_excel("nhanes_adult_1516.xlsx", col_names = TRUE)
 ```
 
