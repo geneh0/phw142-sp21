@@ -117,7 +117,7 @@ ggplot(nhanes, aes(x = bpxsy1, y = ..density..)) +
 
 ggplot(nhanes, aes(y = bpxsy1)) +
   geom_boxplot() +
-  facet_wrap(nhanes$gend_fact) +
+  facet_wrap(nhanes$gender_factor) +
   scale_x_continuous(labels = NULL) +
   scale_y_continuous(name = "systolic bp in mm Hg") +
   labs(title = "US adults age 20 and over", subtitle = "NHANES 2015-2016") +
