@@ -11,7 +11,7 @@ source(here::here('0-setup.R'))
 library(tidyverse)
 library(readxl)
 
-nhanes <- read_excel("nhanes_adult_1516.xlsx", col_names = TRUE)
+nhanes <- read_excel(here::here("data/nhanes_adult_1516.xlsx"), col_names = TRUE)
 ```
 
 ```{r}

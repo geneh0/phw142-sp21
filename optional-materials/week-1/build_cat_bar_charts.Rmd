@@ -11,7 +11,7 @@ source(here::here('0-setup.R'))
 library(tidyverse)
 
 # read in the data
-nhanes <- readxl::read_xlsx('nhanes_adult_1516.xlsx') %>% 
+nhanes <- readxl::read_xlsx(here('data/nhanes_adult_1516.xlsx')) %>% 
         # cleaning the data
         # see build_cat_tables.Rmd for more detail
         mutate(gender_factor = factor(gender, 

@@ -14,7 +14,7 @@ source(here::here('0-setup.R'))
 ```
 
 ```{r set up data frame}
-guinea_pigs <- read_csv("guinsurv.csv", col_names = TRUE)
+guinea_pigs <- read_csv(here::here("data/guinsurv.csv"), col_names = TRUE)
 ```
 
 ```{r get 5 number summary}
