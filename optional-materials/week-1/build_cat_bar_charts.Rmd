@@ -20,10 +20,10 @@ nhanes <- read_xlsx(here::here('data/nhanes_adult_1516.xlsx')) %>%
         # see build_cat_tables.Rmd for more detail
         mutate(gender_factor = factor(gender, 
                                       labels = c('male', 'female')), 
-               age_cat_factor = factor(educ_level, 
+               ed_lvl_factor = factor(educ_level, 
                                        labels = c("lt hs", "some hs", "hs grad",
                                                   "some coll", "coll grad")),
-               ed_lvl_factor = factor(age_cat,
+               age_cat_factor = factor(age_cat,
                                       labels = c("20 to 34","35 to 49",
                                                  "50 to 64","65 and older")) )
         
