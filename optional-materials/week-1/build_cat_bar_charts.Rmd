@@ -70,7 +70,7 @@ educ_age_gender_nomiss %>%
         mutate(prop = n/sum(n)) %>%
         # the pipe operator (%>%) automatically inserts the dataframe created above
         # as the first argument of the ggplot function below
-        ggplot(aes(x = ed_lvl_factor, y = prop, width = .5, fill = gender_factor)) +
+        ggplot(aes(x = ed_lvl_factor, y = prop, fill = gender_factor), width = .5) +
         geom_bar(stat = "identity", position = "dodge") +
         labs(y = "proportion", x = "", title = "highest education level NHANES 2015-2016") +
         theme(plot.title = element_text(hjust = 0.5))
@@ -87,7 +87,7 @@ educ_age_gender_nomiss %>%
         mutate(prop = n/sum(n))  %>%
         # notice that ggplot uses + to "add" elements to the graph
         # versus using the pipe operator
-        ggplot(aes(x = gender_factor, y = prop, width = .5, fill = ed_lvl_factor)) +
+        ggplot(aes(x = gender_factor, y = prop, fill = ed_lvl_factor), width = .5) +
         geom_bar(stat = "identity", position = "dodge") + coord_flip() +
         labs(y = "proportion", x = "", title = "highest education level NHANES 2015-2016") +
         theme(plot.title = element_text(hjust = 0.5))
@@ -102,7 +102,7 @@ educ_age_gender_nomiss %>%
         count(gender_factor, ed_lvl_factor) %>%
         group_by(gender_factor) %>%
         mutate(prop = n/sum(n))  %>%
-        ggplot(aes(x = gender_factor, y = prop, width = .5, fill = ed_lvl_factor)) +
+        ggplot(aes(x = gender_factor, y = prop, fill = ed_lvl_factor), width = .5) +
         geom_bar(stat = "identity") +
         labs(y = "proportion", x = "", title = "highest education level NHANES 2015-2016") +
         theme(plot.title = element_text(hjust = 0.5))
