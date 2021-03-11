@@ -19,14 +19,14 @@ nhanes <- read_excel(here::here("data/nhanes_adult_1516.xlsx"), col_names = TRUE
 
 # create factor variables
 
-nhanes$gender_factor = factor(nhanes$riagendr,
+nhanes$gender_factor <- factor(nhanes$riagendr,
        labels = c("men", "women"))
 
-nhanes$ed_lvl_factor = factor(nhanes$educ_level, 
+nhanes$ed_lvl_factor <- factor(nhanes$educ_level, 
       labels = c("lt hs", "some hs", "hs grad","some coll", "coll grad") ) 
 
  
-nhanes$age_cat_factor = factor(nhanes$age_cat,
+nhanes$age_cat_factor <- factor(nhanes$age_cat,
       labels = c("20 to 34","35 to 49","50 to 64","65 and older"))      
 
 ```
