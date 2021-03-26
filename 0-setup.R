@@ -12,6 +12,6 @@ if (any(installed_packages == FALSE)) {
 }
 
 # Packages loading
-invisible(lapply(packages, library, character.only = TRUE))
+# invisible(lapply(packages, library, character.only = TRUE))
 
 rm(installed_packages, packages)
