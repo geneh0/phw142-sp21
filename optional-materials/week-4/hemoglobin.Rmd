@@ -1,0 +1,76 @@
+---
+title: "heomoglobin for vegan young women"
+author: "Maureen Lahiff"
+date: "March 21, 2019"
+
+---
+
+```{r setup}
+source(here::here('0-setup.R'))
+
+library(tidyverse)
+library(readxl)
+library(epiR)
+
+```
+
+
+```{r read in data}
+
+hemoglobin <- read_excel(here::here("data/hemoglobin.xlsx"), col_names = TRUE)
+
+```
+
+
+
+```{r box plot that is in the Reader and powerpoint slides}
+
+ggplot(hemoglobin, aes(y = hemoglobin) ) +
+  geom_boxplot(width = 0.5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "hemoglobin in g/dl",       
+         x = "", title = "hemoglobin for 25 vegan young women") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+```{r normal quantile plot}
+
+qqnorm(hemoglobin$hemoglobin, frame = FALSE,
+       main = "hemoglobin for 25 vegan young women",
+       xlab = "normal scores", ylab = "hemoglobin in g/dl")
+qqline(hemoglobin$hemoglobin)
+
+```
+
+``` {r normal quantile plot using ggplot}
+
+ggplot(hemoglobin, aes(sample = hemoglobin)) +
+  geom_qq() + geom_qq_line() +
+  labs(title = "hemoglobin for 25 vegan young women") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+```{r 95% confidence interval}
+
+# calculate and save mean and se of the diffs
+mean_diff = mean(hemoglobin$hemoglobin)
+std_dev_diff = sd(hemoglobin$hemoglobin)
+se_mean_diff <- sd(hemoglobin$hemoglobin) / sqrt(25)
+# get t* value for 95% confidence interval
+t_star <- qt(.975, df = 24, lower.tail = TRUE)
+#calculate confidence interval 
+lower_limit <- mean_diff - t_star * se_mean_diff
+upper_limit <- mean_diff + t_star * se_mean_diff
+# print mean, se, and confidence interval
+c(mean_diff, std_dev_diff, se_mean_diff)
+c(lower_limit, upper_limit)
+
+# use epi.conf from epiR to calculate 95% confidence interval
+epi.conf(hemoglobin$hemoglobin, ctype = "mean.single", conf.level = 0.95)
+
+# use epi.conf from epiR to calculate 99% confidence interval
+epi.conf(hemoglobin$hemoglobin, ctype = "mean.single", conf.level = 0.99)
+
+```

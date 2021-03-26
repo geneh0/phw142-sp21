@@ -1,0 +1,112 @@
+---
+title: "guinea pigs"
+author: "Maureen Lahiff"
+date: "January 12, 2020"
+
+---
+
+# be sure to download the file guinsurv.csv from the Week 1 R Toolkit
+# to your working directory
+
+
+```{r set up}
+source(here::here('0-setup.R'))
+
+library(tidyverse)
+library(readr)
+library(readxl)
+
+
+```
+
+```{r set up data frame}
+
+guinea_pigs <- read_csv(here::here("data/guinsurv.csv"))
+
+```
+
+```{r get 5 number summary}
+
+# using tidyverse dplyr functions
+
+guinea_pigs %>% summarize(
+    min = min(survtime) ,
+    q1 = sprintf("%0.2f", quantile(survtime, 0.25)) ,
+    median = sprintf("%0.2f", quantile(survtime, 0.50)) ,
+    q3 = sprintf("%0.2f", quantile(survtime, 0.75)) ,
+    max = max(survtime)
+)
+
+# using base R summary command (which also includes average)
+
+summary(guinea_pigs$survtime)
+
+```
+
+```{r not everyone defines quantiles the same way}
+
+# to get median and quartiles using Baldi and Moore's definition
+
+quantile(guinea_pigs$survtime, probs = c(0.25, 0.50, 0.75), type = 5)
+
+# I think this gives the quantiles as R summary defines them 
+
+quantile(guinea_pigs$survtime, probs = c(0.25, 0.50, 0.75), type = 7)
+
+```
+
+```{r average and standard deviation}
+
+# using tidyverse dplyr functions
+
+guinea_pigs %>% summarize(
+    ave = sprintf("%0.2f", mean(survtime) ) ,
+    std_dev = sprintf("%0.2f",sd(survtime) )
+)
+
+# using base R functions
+
+mean(guinea_pigs$survtime)
+sd(guinea_pigs$survtime)
+
+```
+
+```{r histogram that is in the Reader and powerpoint slides}
+
+ggplot(guinea_pigs, aes(x = survtime, y = ..density..)) +
+  geom_histogram(binwidth = 20, color = "black", fill = "blue") +
+        labs(y = "density",       
+          title = "Baldi and Moore guinea pig survival times, n = 72", 
+          x = "guinea pig survival time in days") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+```{r box plot that is in the Reader and powerpoint slides}
+
+ggplot(guinea_pigs, aes(y = survtime) ) +
+  geom_boxplot(width = 0.5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "survival time in days",       
+         x = "", title = "Baldi & Moore guinea pig survival times, n = 72") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+```{r normal quantile plot}
+
+qqnorm(guinea_pigs$survtime, frame = FALSE,
+       main = "normal quantile plot for guinea pig survival data",
+       xlab = "normal scores", ylab = "survival in days")
+qqline(guinea_pigs$survtime)
+
+# normal quantile plot using ggplot
+
+ggplot(guinea_pigs, aes(sample = survtime)) +
+  geom_qq() + geom_qq_line() +
+  labs(title = "Baldi & Moore guinea pig survival times, n = 72") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+```
+

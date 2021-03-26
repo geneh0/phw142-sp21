@@ -1,0 +1,108 @@
+---
+title: "pre-schooler's spatio-temporal reasoning and piano lessons"
+author: "Maureen Lahiff"
+date: "March 22, 2019"
+
+---
+
+# Moore and McCabe's preschooler's piano lesson data n = 34
+
+# data file is piano_reasoning.xlsx
+# variable (column) name reas_diff
+
+# working with confidence intervals for means
+# practice with box plots and qqnorm plots to check assumption
+# for small samples, 
+# so we know sampling dist of x-bar is approx normal curve
+
+# then we'll practice with 95% and 99% confidence intervals
+
+# the code in this R Markdown file is a template for you to adapt
+# for other practice and the problem set
+
+```{r the usual directory and libraries, plus a new one: epiR}
+
+# be sure to set your working directory or project
+
+library(tidyverse)
+library(readr)
+library(readxl)
+library(epiR)
+
+```
+
+
+```{r read in data for reas_diff}
+
+piano_reas <- read_excel("piano_reasoning.xlsx", col_names = TRUE)
+
+```
+
+```{r summary statistics and boxplot}
+
+summary(piano_reas$reas_diff)
+
+piano_reas %>% summarize(
+    min = min(reas_diff) ,
+    q1 = sprintf("%0.2f", quantile(reas_diff, 0.25)) ,
+    median = sprintf("%0.2f", quantile(reas_diff, 0.50)) ,
+    q3 = sprintf("%0.2f", quantile(reas_diff, 0.75)) ,
+    max = max(reas_diff)
+)
+
+ggplot(piano_reas, aes(y = reas_diff) ) +
+  geom_boxplot(width = 0.5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "difference in reasoning scores",       
+         x = "", title = "preschooler's spatio-temoporal reasoning", subtitle = " differences after 6 months of piano lessons, n = 34") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+
+```
+
+```{r normal quantile plot}
+
+qqnorm(piano_reas$reas_diff, frame = FALSE,
+       main = "normal quantile plot reasoning score diffs",
+       xlab = "normal scores", ylab = "differences")
+qqline(piano_reas$reas_diff)
+
+```
+
+```{r confidence intervals}
+
+# calculate and save mean and se of the diffs
+mean_diff = mean(piano_reas$reas_diff)
+std_dev_diff = sd(piano_reas$reas_diff)
+se_mean_diff <- sd(piano_reas$reas_diff) / sqrt(34)
+
+# get t* value for 95% confidence interval
+t_star <- qt(.975, df = 33, lower.tail = TRUE)
+
+#calculate confidence interval 
+lower_limit <- mean_diff - t_star * se_mean_diff
+upper_limit <- mean_diff + t_star * se_mean_diff
+
+# print mean, se, and confidence interval
+c(mean_diff, std_dev_diff, se_mean_diff)
+c(lower_limit, upper_limit)
+
+# use epi.conf from epiR to calculate 95% confidence interval
+epi.conf(piano_reas$reas_diff, ctype = "mean.single", conf.level = 0.95)
+
+# use epi.conf from epiR to calculate 99% confidence interval
+epi.conf(piano_reas$reas_diff, ctype = "mean.single", conf.level = 0.99)
+
+```
+
+```{r Shapiro-Wilk test for Week 5}
+
+shapiro.test(piano_reas$reas_diff)
+
+```
+
+```{r t test for Week 5}
+
+t.test(piano_reas$reas_diff, mu = 0, alternative = "greater", conf.level = .95)
+
+```
+

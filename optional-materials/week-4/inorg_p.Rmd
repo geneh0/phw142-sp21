@@ -1,0 +1,110 @@
+---
+title: "inorganic phosphorus for elderly women"
+author: "Maureen Lahiff"
+date: "March 27, 2019"
+output: word_document
+---
+
+# box plots, normal quantile plots
+# and confidence intevals for the population mean
+
+# Baldi and Moore's elderly health data set, n = 86
+
+# the data used here are inorganic phosphorus for the women
+# data file is inorg_p.xlsx
+# variable (column) name also inorg_p
+
+# be sure to set your working directory
+
+```{r get libraries loaded}
+
+source(here::here('0-setup.R'))
+
+library(tidyverse)
+library(readr)
+library(readxl)
+library(epiR)
+
+```
+
+```{r read in data}
+
+inorg_p <- read_excel(here::here("data/inorg_p.xlsx"), col_names = T)
+
+```
+
+```{r summary statistics and boxplot}
+
+summary(inorg_p$inorg_p)
+
+inorg_p %>% summarize(
+    min = min(inorg_p) ,
+    q1 = sprintf("%0.2f", quantile(inorg_p, 0.25)) ,
+    median = sprintf("%0.2f", quantile(inorg_p, 0.50)) ,
+    q3 = sprintf("%0.2f", quantile(inorg_p, 0.75)) ,
+    max = max(inorg_p)
+)
+
+ggplot(inorg_p, aes(y = inorg_p ) ) +
+  geom_boxplot(width = 0.5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "inorganic phosphorus in mmol/l",       
+         x = "", title = "elderly health data blood inorganic phosphorus", subtitle = " n = 86 women") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+
+```
+
+```{r normal quantile plot}
+
+qqnorm(inorg_p$inorg_p, frame = FALSE,
+       main = "normal quantile plot elderly women",
+       xlab = "normal scores", ylab = "inorganic phosphorus in mmol/l")
+qqline(inorg_p$inorg_p)
+
+# using gglot
+
+ggplot(inorg_p, aes(sample = inorg_p)) +
+  geom_qq() + geom_qq_line() +
+  labs(title = "elderly health data blood inorganic phosphorus", subtitle = " n = 86 women") +
+  theme(plot.title = element_text(hjust = 0.5),  plot.subtitle = element_text(hjust = 0.5))
+
+```
+
+```{r confidence intervals}
+
+# calculate and save mean and se
+mean_p = mean(inorg_p$inorg_p)
+std_dev_p = sd(inorg_p$inorg_p)
+se_p <- sd(inorg_p$inorg_p) / sqrt(86)
+
+# get t* value for 95% confidence interval
+t_star_95 <- qt(.975, df = 85, lower.tail = TRUE)
+
+#calculate confidence interval 
+lower_limit <- mean_p - t_star_95 * se_p
+upper_limit <- mean_p + t_star_95 * se_p
+# print mean, se, and confidence interval
+c(mean_p, std_dev_p, se_p)
+c("t* for 85 df, conf level = .95", round(t_star_95,3) )
+c(lower_limit, upper_limit)
+
+# get t* for 99% conf int
+t_star_99 <- qt(.005, df = 85, lower.tail = FALSE)
+c("t* for 85 df, conf level = .99", round(t_star_99,3) )
+
+
+# use epi.conf from epiR to calculate 95% confidence interval
+epi.conf(inorg_p$inorg_p, ctype = "mean.single", conf.level = 0.95)
+
+# use epi.conf from epiR to calculate 99% confidence interval
+epi.conf(inorg_p$inorg_p, ctype = "mean.single", conf.level = 0.99)
+
+```
+
+``` {r  Shapiro Wilk twst and t test for Week 5}
+
+t.test(inorg_p$inorg_p, mu = 1.21, alternative = "less", conf.level = .95 )
+
+shapiro.test(inorg_p$inorg_p)
+
+```

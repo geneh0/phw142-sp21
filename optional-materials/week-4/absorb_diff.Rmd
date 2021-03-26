@@ -1,0 +1,58 @@
+---
+title: "ddrug absorption matdhed pairs example"
+author: "Maureen Lahiff"
+date: "March 23, 2020"
+output: word_document
+---
+
+# Baldi and Moore exercise 17.44
+
+```{r}
+source(here::here('0-setup.R'))
+
+library(tidyverse)
+library(readxl)
+library(epiR)
+
+absorb_diff <- read_excel(here::here("data/drug_absorb.xlsx"))
+```
+
+# box plot of differences
+
+```{r}
+ggplot(absorb_diff, aes(y = diff) ) +
+  geom_boxplot(width = 0.5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "difference in drug absorption",       
+         x = "", title = "differences in absorption", subtitle = "n = 20 generic - reference values") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+# normal quantile plot of differences
+
+
+```{r}
+# using base R
+qqnorm(absorb_diff$diff, frame = FALSE,
+       main = "differences in drug absorption",
+       xlab = "normal scores", ylab = "differences")
+qqline(absorb_diff$diff)
+
+# normal quantile plot using ggplot
+ggplot(absorb_diff, aes(sample = diff)) +
+  geom_qq() + geom_qq_line() +
+  labs(title = "differences in absorption generic - reference") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+mean(absorb_diff$diff)
+sd(absorb_diff$diff)
+```
+
+
+
+# 95% confidence interval for the mean difference
+
+```{r}
+epi.conf(absorb_diff$diff, ctype = "mean.single", conf.level = .95)
+```

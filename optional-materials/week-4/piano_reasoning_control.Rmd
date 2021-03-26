@@ -1,0 +1,99 @@
+---
+title: "piano reasoning control group"
+author: "Maureen Lahiff"
+date: "March 26, 2019"
+
+---
+
+Moore and McCabe's preschooler's piano lesson data for controls n = 44
+
+data file is piano_reasoning_control.xlsx
+variable (column) name reas_diff
+
+there is also a data file piano_reasoning_2group for the side by side box plot
+of the reasoning score differences for the 2 groups
+
+
+```{r setup}
+source(here::here('0-setup.R'))
+
+library(tidyverse)
+library(readxl)
+library(epiR)
+
+
+piano_control <- read_excel(here::here("data/piano_reasoning_control.xlsx"))
+```
+
+```{r box plot}
+
+ggplot(piano_control, aes(y = reas_diff) ) +
+  geom_boxplot(width = 0.5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "differences", x = "",      
+         title = "differences in spatio-temporal reasoning", 
+          subtitle = "n = 44 control group children") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+
+```
+
+```{r normal quantile plot}
+
+qqnorm(piano_control$reas_diff, frame = FALSE,
+       main = "control group reasoning score diffs",
+       xlab = "normal scores", ylab = "differences")
+qqline(piano_control$reas_diff)
+
+```
+
+``` {r normal quantile plot using ggplot}
+
+ggplot(piano_control, aes(sample = reas_diff)) +
+  geom_qq() + geom_qq_line() +
+  labs(title = "control group reasoning score diffs") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+
+
+
+
+# Shapiro Wilk test, covered in Week 5
+
+shapiro.test(piano_control$reas_diff)
+
+```
+
+```{r confidence interval}
+
+# use epi.conf from epiR to calculate 95% confidence interval
+epi.conf(piano_control$reas_diff, ctype = "mean.single", conf.level = 0.95)
+
+```
+```{r t test for Week 5}
+
+t.test(piano_control$reas_diff, mu = 0, alternative = "greater", conf.level = .95)
+
+```
+
+
+# data for both groups, piano lessons and controls, for side by side box plots
+
+```{r}
+piano_2group <- read_excel(here::here("data/piano_reasoning_2group.xlsx"))
+```
+
+```{r side by side box plots for 2 groups}
+
+piano_2group$group <- factor(piano_2group$group)
+
+ggplot(piano_2group, aes(y = reaschng) ) +
+  geom_boxplot(width = 0.5) +
+  facet_wrap(piano_2group$group) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "differences", x = "",      
+         title = "differences in spatio-temporal reasoning", 
+          subtitle = "control and 6 months piano lessons") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+
+```
