@@ -1,0 +1,54 @@
+---
+title: "Week 4-5 R Lab"
+author: "Gene Ho"
+date: "4/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = FALSE)
+```
+
+For Questions 1 and 3, skeleton code is given. To complete the lab, update the code to correctly execute the specifications of the question. 
+
+# Question 1
+
+Install the packages listed in the lab handout: 
+"rmarkdown", "knitr", "epiR", "stats", "tidyverse", "readxl", "epitools", "exact2x2", "DescTools", "MESS", "pwr", "here"
+
+Remember to quote the package name when running `install.packages` since you're technically searching the internet for the package name. 
+
+```{r}
+install.packages('rmarkdown')
+# install the rest of the packages!
+```
+
+Change the code below to load the `tidyverse` package. Note, you don't have to quote the package name here since R knows to osearch your finite selection of installed packages. 
+
+```{r}
+# this cell + output goes in the lab (once updated)
+library(rmarkdown)
+```
+
+# Question 2 
+
+Run the code below to give us information on your local RStudio installation. 
+
+```{r}
+Sys.info()
+
+R.version
+```
+
+
+# Question 3
+
+Import the `inorg_p.xlsx` file and run `str`. You may need to load a certain package to get this function to run. If you're not sure what the package is called, run "??function_name_here". Remember that R sometimes lists functions as "package_name::function_name" (see pages 4-5 of RStudio Basics for more info). 
+
+```{r}
+whatever_name_you_want_to_call_this_obj <- read_excel('path_to_file/inorg_p.xlsx') 
+# might be in the data folder
+
+str(obj_name_created_in_line_above)
+```
+
