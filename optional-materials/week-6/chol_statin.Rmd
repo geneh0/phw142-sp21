@@ -1,0 +1,63 @@
+---
+title: "Tindall cholesterol statin data from Daniel updated for 2020"
+author: "Maureen Lahiff"
+date: "April 4, 2020"
+output: word_document
+---
+```{r}
+library(tidyverse)
+library(readr)
+library(readxl)
+library(epiR)
+library(epitools)
+library(DescTools)
+
+# read in Excel data file into data frame chol_statin
+
+chol_statin <- read_excel(here::here("data/chol_statin.xlsx"))
+```
+
+```{r}
+# calculate differences
+
+chol_statin$diff = chol_statin$before - chol_statin$after
+```
+
+```{r}
+# summary statistics for differences
+
+summary(chol_statin$diff)
+
+mean_diff <- mean(chol_statin$diff)
+std_dev_diff <- sd(chol_statin$diff)
+
+c(mean_diff, std_dev_diff)
+```
+
+```{r}
+# box plot of differences
+
+ggplot(chol_statin, aes(y = diff) ) +
+geom_boxplot(width = .5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "change in cholesterol in mg/dL", x = "",    
+         title = "cholesterol difference before and after   weeks of statin drugs", subtitle = "Tindall data from Daniel, n = 107" ) +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5) ) 
+```
+
+```{r}
+# normal quantile plot and Shapiro-Wilk test for differences
+
+qqnorm(chol_statin$diff, frame = FALSE,
+       main = "normal quantile plot for cholesterol differences",
+       xlab = "normal scores", ylab = "cholesterol diff in mg/dL")
+qqline(chol_statin$diff)
+
+shapiro.test(chol_statin$diff)  
+```
+
+```{r}
+# t test and confidence interval for differences
+
+t.test(chol_statin$diff, mu = 0, alternative = "two.sided", conf.level = .95)
+```
