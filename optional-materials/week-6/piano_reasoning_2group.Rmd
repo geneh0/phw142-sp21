@@ -1,0 +1,84 @@
+---
+title: "piano lessons and spatio-temporal reasoning - 2 groups  updated for 2020"
+author: "Maureen Lahiff"
+date: "April 5, 2020"
+output: word_document
+---
+```{r}
+library(tidyverse)
+library(readr)
+library(readxl)
+library(epiR)
+library(epitools)
+library(DescTools)
+
+
+# read in data from Excel file
+
+piano_2grp <- read_excel(here::here("data/piano_reasoning_2group.xlsx"))
+```
+
+```{r}
+# create ordered factor variable
+
+piano_2grp$group_ord <- factor(piano_2grp$group, ordered = T, levels = c("piano lessons", "control") )
+
+```
+
+```{r}
+# side by side box plots
+
+ggplot(piano_2grp, aes(y = reaschng) ) +
+geom_boxplot(width = .5) +
+facet_wrap(piano_2grp$group_ord) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "difference in reasoning score", x = "",    
+         title = "preschoolers spatio-temporal reasoning", 
+          subtitle = "piano lessons and control groups") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+# normal quantile plot and Shapiro-Wilk test for control group
+
+qqnorm(piano_2grp$reaschng[piano_2grp$group == "control"] , frame = FALSE,
+       main = "normal quantile plot for control group",
+       xlab = "normal scores", ylab = "differences in reasoning scores")
+qqline(piano_2grp$reaschng[piano_2grp$group == "control"])
+
+shapiro.test(piano_2grp$reaschng[piano_2grp$group == "control"])
+```
+
+```{r}
+# normal quantile plot and Shapiro-Wilk test for piano lessons group
+
+qqnorm(piano_2grp$reaschng[piano_2grp$group == "piano lessons"] , frame = FALSE,
+       main = "normal quantile plot for piano lesson  group",
+       xlab = "normal scores", ylab = "differences in reasoning scores")
+qqline(piano_2grp$reaschng[piano_2grp$group == "piano lessons"])
+
+shapiro.test(piano_2grp$reaschng[piano_2grp$group == "piano lessons"])
+```
+
+```{r}
+# summary statistics for each group
+
+mean_piano_lessons <- mean(piano_2grp$reaschng[piano_2grp$group == "piano lessons"])
+std_dev_piano_lessons <- sd(piano_2grp$reaschng[piano_2grp$group == "piano lessons"])
+
+mean_control <- mean(piano_2grp$reaschng[piano_2grp$group == "control"])
+std_dev_control <- sd(piano_2grp$reaschng[piano_2grp$group == "control"])
+
+c(mean_piano_lessons, std_dev_piano_lessons)
+c(mean_control, std_dev_control)
+```
+
+```{r}
+# t.test with two-sided alt hyp to get conf int
+
+t.test(piano_2grp$reaschng ~ piano_2grp$group_ord, var.equal = FALSE, mu = 0, alternative = "two.sided", conf.level = .95)
+
+# t.test with one-sided alt hyp for research question
+
+t.test(piano_2grp$reaschng ~ piano_2grp$group_ord, var.equal = FALSE, mu = 0, alternative = "greater", conf.level = .95) 
+```

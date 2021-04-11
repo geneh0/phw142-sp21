@@ -1,0 +1,86 @@
+---
+title: "Baldi and Moore   gmo chicks  updated for 2020"
+author: "Maureen Lahiff"
+date: "April 5, 2020"
+output: word_document
+---
+```{r}
+library(tidyverse)
+library(readr)
+library(readxl)
+library(DescTools)
+
+# read in data from Excel file
+
+gmo_chicks <- read_excel(here::here("data/gmo_chicks.xlsx"))
+```
+
+```{r}
+# summary statistics for each group
+
+mean_regular <- mean(gmo_chicks$weight[gmo_chicks$group == "regular"])
+std_dev_regular <- sd(gmo_chicks$weight[gmo_chicks$group == "regular"])
+
+mean_transgen <- mean(gmo_chicks$weight[gmo_chicks$group == "transgenic"])
+std_dev_transgen <- sd(gmo_chicks$weight[gmo_chicks$group == "transgenic"])
+
+c(mean_regular, std_dev_regular)
+c(mean_transgen, std_dev_transgen)
+
+```
+
+```{r}
+# create ordered factor variable
+
+gmo_chicks$group_factor <- factor(gmo_chicks$group, labels = c("regular", "transgenic"))
+```
+
+```{r}
+# side by side box plots
+
+ggplot(gmo_chicks, aes(y = weight) ) +
+geom_boxplot(width = .5) +
+facet_wrap(gmo_chicks$group_factor) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "hatching weight in grams", x = "",    
+         title = "regular and transgenic chicks" ) +
+  theme(plot.title = element_text(hjust = 0.5) ) 
+```
+
+```{r}
+# normal quantile plot and Shapiro-Wilk test for transgenic group 
+  
+qqnorm(gmo_chicks$weight[gmo_chicks$group == "transgenic"] , frame = FALSE,
+       main = "normal quantile plot for transgenic chicks",
+       xlab = "normal scores", ylab = "hatching weight in g")
+qqline(gmo_chicks$weight[gmo_chicks$group == "transgenic"])
+
+shapiro.test(gmo_chicks$weight[gmo_chicks$group == "transgenic"])
+```
+
+```{r}
+# normal quantile plot and Shapiro-Wilk test for regular group 
+
+qqnorm(gmo_chicks$weight[gmo_chicks$group == "regular"] , frame = FALSE,
+       main = "normal quantile plot for regular chicks",
+       xlab = "normal scores", ylab = "hatching weight in g")
+qqline(gmo_chicks$weight[gmo_chicks$group == "regular"])
+
+shapiro.test(gmo_chicks$weight[gmo_chicks$group == "regular"])
+```
+
+```{r}
+# confidence interval for the difference of the 2 means from MeanDiffcI
+# from DescTools
+# Mac users can skip this, as t.test command will also give interval
+
+MeanDiffCI(gmo_chicks$weight ~ gmo_chicks$group, method = "classic", sides = "two.sided", conf.level = .95)
+
+# the best test:
+
+t.test(gmo_chicks$weight ~ gmo_chicks$group, var.equal = FALSE,  alternative = "two.sided", conf.level = .95)
+
+# the test with the pooled std dev -- do not use
+
+t.test(gmo_chicks$weight ~ gmo_chicks$group, var.equal = TRUE,  alternative = "two.sided", conf.level = .95)
+```

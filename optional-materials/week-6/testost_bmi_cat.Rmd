@@ -1,0 +1,72 @@
+---
+title: "testosterone and BMI -- 2 groups Baldi and Moore updated for 2020"
+author: "Maureen Lahiff"
+date: "April 4, 2020"
+output: word_document
+---
+```{r}
+library(tidyverse)
+library(readr)
+library(readxl)
+library(DescTools)
+library(MESS)
+
+# if MESS does not work on your computer, run the line below: 
+# install.packages("https://cran.r-project.org/src/contrib/Archive/RcppArmadillo/RcppArmadillo_0.9.900.3.0.tar.gz", repos=NULL, type="source")
+# then install mess
+# install.packages('MESS')
+
+# read data in and set up data frame bmi-testost
+
+bmi_testost <- read_excel(here::here("data/testost_bmi_cat.xlsx"))
+```
+
+```{r}
+# create ordered factor and label categories
+
+bmi_testost$bmi_cat_fact <- factor(bmi_testost$bmi_cat, order = T, labels = c("healthy", "obese") )
+
+# summary statistics for each group
+
+mean_healthy <- mean(bmi_testost$testosterone[bmi_testost$bmi_cat == "healthy"])
+std_dev_healthy <- sd(bmi_testost$testosterone[bmi_testost$bmi_cat == "healthy"])
+
+mean_obese <- 
+mean(bmi_testost$testosterone[bmi_testost$bmi_cat == "obese"])
+std_dev_obese <- sd(bmi_testost$testosterone[bmi_testost$bmi_cat == "obese"])
+
+c(mean_healthy, std_dev_healthy)
+c(mean_obese, std_dev_obese)
+
+# side by side box plots
+
+ggplot(bmi_testost, aes(y = testosterone) ) +
+geom_boxplot(width = .5) +
+facet_wrap(bmi_testost$bmi_cat_fact) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "testosterone in nmol/L", x = "",    
+         title = "healthy weight and obese male adolescents" ) +
+  theme(plot.title = element_text(hjust = 0.5) ) 
+  
+# normal quantile plot and Shapiro-Wilk test for healthy weight group
+
+qqnorm(bmi_testost$testosterone[bmi_testost$bmi_cat == "healthy"] , frame = FALSE,
+       main = "normal quantile plot for healthy weight",
+       xlab = "normal scores", ylab = "testosterone in nmo/L")
+qqline(bmi_testost$testosterone[bmi_testost$bmi_cat == "healthy"])
+
+shapiro.test(bmi_testost$testosterone[bmi_testost$bmi_cat == "healthy"])
+
+# normal quantile plot and Shapiro-Wilk test for those who are obese
+
+qqnorm(bmi_testost$testosterone[bmi_testost$bmi_cat == "obese"] , frame = FALSE,
+       main = "normal quantile plot for obese",
+       xlab = "normal scores", ylab = "testosterone in nmo/L")
+qqline(bmi_testost$testosterone[bmi_testost$bmi_cat == "obese"])
+
+shapiro.test(bmi_testost$testosterone[bmi_testost$bmi_cat == "obese"])
+
+# t test and confidence interval using Welch-Satterthwaite df
+
+t.test(bmi_testost$testosterone ~ bmi_testost$bmi_cat, var.equal = FALSE, mu = 0, alternative = "two.sided", conf.level = .95)
+```
