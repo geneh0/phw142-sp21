@@ -1,0 +1,94 @@
+---
+title: "oligofructose"
+author: "Maureen Lahiff"
+date: "February 5, 2019"
+output: word_document
+---
+
+# analyses for Week 6 Journal Club
+
+# load functions
+
+```{r}
+
+library(tidyverse)
+library(readxl)
+library(readr)
+library(epitools)
+library(epiR)
+
+```
+
+
+# use read_excel to put the oligofructose data in a data frame
+
+```{r}
+
+oligofructose <- read_excel(here::here("data/oligofructose.xlsx"), col_names = TRUE)
+str(oligofructose)
+
+```
+
+```{r calculate diffs and summary statistics}
+
+# calcuate differences
+oligofructose$diff = oligofructose$oligofructose - oligofructose$control
+
+ave_diff = mean(oligofructose$diff)
+sd_diff = sd(oligofructose$diff)  
+se_diff = sd_diff/sqrt(11)
+
+c(ave_diff, sd_diff, se_diff )
+
+```
+
+```{r boxplot of differences}
+
+# boxplot of differences to check assumptions, as n = 11
+
+ggplot(oligofructose, aes(y = diff)) +
+  geom_boxplot(width = 0.5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "Ca absorption % :oligofructose - control",       
+         x = "", title = "fractional Ca absorption % difference,
+         n = 11") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+```{r normal quantile plot of differences and Shapiro-Wilk test}
+
+# normal quantile plot of differences and Shapiro-Wilk test 
+
+qqnorm(oligofructose$diff, frame = FALSE,
+       main = "normal quantile plot for differences",
+       xlab = "normal scores", ylab = "differences")
+qqline(oligofructose$diff)
+
+  
+shapiro.test(oligofructose$diff)
+
+```
+
+
+# t test calculations and confidence interval for pop mean difference
+
+```{r}
+
+t.test(oligofructose$diff, mu = 0, alternative = "greater", sig.level = .05)
+
+# remember that t.test will give a lower confidence limit
+# when we ask for a one-sided alternative hypothesis mu > 0
+
+# find a 95% conf int for the population mean difference 
+
+epi.conf(oligofructose$diff, ctype = "mean.single", conf.level = .95)
+
+# we might also look at a 90% confidence interval
+
+epi.conf(oligofructose$diff, ctype = "mean.single", conf.level = .90)
+
+
+```
+
+
