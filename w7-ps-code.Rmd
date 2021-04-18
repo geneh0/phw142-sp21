@@ -1,0 +1,43 @@
+---
+title: "problem set 7 for 2020"
+author: "Maureen Lahiff"
+date: "April 7, 2020"
+output: word_document
+---
+```{r}
+library(epitools)
+library(epiR)
+library(exact2x2)
+library(DescTools)
+```
+
+```{r}
+dcct <- matrix(c(286,77,209,143), byrow = T, nrow = 2, ncol = 2, dimnames = list(c("intensive", "conventional"), c("no progression", "progression") ))
+
+dcct
+```
+
+```{r}
+epitab(dcct, method = "riskratio", conf.level = .95, riskratio = "wald", pvalue = "chi2", correction = F)
+```
+
+```{r}
+pancreas <- matrix(c(16,3,1,6), byrow = T, nrow = 2, ncol = 2, dimnames = list(c("minor","major"),c("not life-threat","life-threat" )))
+
+pancreas
+```
+
+```{r}
+fisher.test(pancreas, alternative = "two.sided")
+```
+
+```{r}
+BinomDiffCI(6,7,3,19, method = "ac", conf.level = .95)
+```
+
+```{r}
+pbinom(216, size = 355, p = .5, lower.tail = F)
+```
+
+```{r}
+binom.exact(217, n = 355, p = .5, alternative = "greater")
