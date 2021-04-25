@@ -1,0 +1,106 @@
+---
+title: "bmi testosterone regression  updated for 2020"
+author: "Maureen Lahiff"
+date: "April 11, 2020"
+output: word_document
+---
+```{r}
+library(tidyverse)
+library(readr)
+library(readxl)
+
+#read in data, create data frame bmi_testost
+
+bmi_testost <- read_excel(here::here("data/bmi_testosterone.xlsx"))
+```
+
+```{r}
+# scatterplot with least squares line with the stat.smooth argument
+# but no standard error band around line
+
+ggplot(bmi_testost, aes(x = bmi, y = testosterone)) +
+geom_point() +
+stat_smooth(method = "lm", se = F, n = 50) +
+labs(x = "BMI", y = "testosterone in nmoles/liter",      
+         title = "Mogri et al. bmi and testosterone", 
+          subtitle = "50 adolescent men") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+# summary statistics  
+  
+mean_bmi <- mean(bmi_testost$bmi)
+std_dev_bmi <- sd(bmi_testost$bmi)  
+c(mean_bmi, std_dev_bmi)
+
+mean_testost <- mean(bmi_testost$testosterone)
+std_dev_testost <- sd(bmi_testost$testosterone)  
+c(mean_testost, std_dev_testost)
+```
+
+```{r}
+# Pearson correlation
+  
+cor(bmi_testost$testosterone,bmi_testost$bmi, method = "pearson")
+
+# test for correlation, null hyp is population rho = 0
+# with alternative = "two.sided", 
+# also calculates a confidence interval for rho using Fisher's z transformation
+
+cor.test(bmi_testost$testosterone,bmi_testost$bmi, method = "pearson", 
+           alternative = "two.sided")
+```
+
+```{r}
+# fit linear regression and save results
+
+bmi_testost_regr <- lm(testosterone ~ bmi, data = bmi_testost)
+
+summary(bmi_testost_regr)
+```
+
+```{r}
+# calcluate fitted values, residuals, and standardized residuals
+
+bmi_testost$testost_hat <- fitted(bmi_testost_regr)
+bmi_testost$resids <- residuals(bmi_testost_regr)
+bmi_testost$std_res <- rstandard(bmi_testost_regr)
+
+# get 95% confidence intervals for population slope and intercept
+# the lower limit is labeled 2.5 % and the upper limit is labeled 97.5 %
+
+confint(bmi_testost_regr, level = .95)
+```
+
+```{r}
+# box plot of standardized residuals
+
+ggplot(bmi_testost, aes(y = std_res) ) +
+  geom_boxplot(width = 0.5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "standardized resiuals ri", x = "",      
+         title = "box plot of standardized residuals", 
+          subtitle = "regression of testosterone on bmi") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+# normal quantile plot and Shapiro-Wilk test for standarized residuals
+
+qqnorm(bmi_testost$std_res, frame = FALSE,
+       main = "normal quantile plot for standarized residuals",
+       xlab = "normal scores", ylab = "std res for regr of testosterone on bmi")
+qqline(bmi_testost$std_res)
+
+shapiro.test(bmi_testost$std_res)
+```
+
+```{r}
+# summary gives R squared, 
+# anova gives sum of squares for model and residual sum of squares
+
+summary(bmi_testost_regr)
+
+anova(bmi_testost_regr)
+```

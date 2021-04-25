@@ -1,0 +1,137 @@
+---
+title: "pedometer and bmi  revised fror 2020"
+author: "Maureen Lahiff"
+date: "April 26, 2019"
+output: word_document
+---
+```{r}
+library(tidyverse)
+library(readr)
+library(readxl)
+
+#read in data, create data frame pedometer_bmi
+
+pedometer_bmi <- read_excel(here::here("data/pedometer_women.xlsx"))
+```
+
+```{r}
+# scatterplot with least squares line with the stat.smooth argument
+# but no standard error band around line
+
+ggplot(pedometer_bmi, aes(y = bmi, x = pa)) +
+geom_point() +
+stat_smooth(method = "lm", se = F, n = 100) +
+labs(y = "BMI", x = "average pedometer steps / day in 1000s",      
+         title = "Mestek et al. pedometer steps per day and bmi", 
+          subtitle = "100 college women") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+# summary statistics
+  
+mean_bmi <- mean(pedometer_bmi$bmi)
+std_dev_bmi <- sd(pedometer_bmi$bmi)  
+c(mean_bmi, std_dev_bmi)
+
+mean_steps <- mean(pedometer_bmi$pa)
+std_dev_steps <- sd(pedometer_bmi$pa)  
+c(mean_steps, std_dev_steps)
+```
+
+```{r}
+# Pearson correlation
+  
+cor(pedometer_bmi$bmi, pedometer_bmi$pa, method = "pearson")
+
+# test for correlation, null hyp is population rho = 0
+# with alternative = "two.sided", 
+# also calculates a confidence interval for rho using Fisher's z transformation
+
+cor.test(pedometer_bmi$bmi, pedometer_bmi$pa, method = "pearson", 
+           alternative = "two.sided")
+```
+
+```{r}
+# fit linear regression and save results
+
+pedometer_bmi_regr <- lm(bmi ~ pa, data = pedometer_bmi)
+
+summary(pedometer_bmi_regr)
+```
+
+```{r}
+# calcluate fitted values, residuals, and standardized residuals
+
+pedometer_bmi$bmi_hat <- fitted(pedometer_bmi_regr)
+pedometer_bmi$resids <- residuals(pedometer_bmi_regr)
+pedometer_bmi$std_res <- rstandard(pedometer_bmi_regr)
+```
+
+```{r}
+# get 95% confidence intervals for population slope and intercept
+# the lower limit is labeled 2.5 % and the upper limit is labeled 97.5 %
+
+confint(pedometer_bmi_regr, level = .95)
+```
+
+```{r}
+# box plot of standardized residuals
+
+ggplot(pedometer_bmi, aes(y = std_res) ) +
+  geom_boxplot(width = 0.5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "standardized resiuals ri", x = "",      
+         title = "box plot of standardized residuals", 
+          subtitle = "regression of bmi on pedometer steps") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+# normal quantile plot and Shapiro-Wilk test for standarized residuals
+
+qqnorm(pedometer_bmi$std_res, frame = FALSE,
+       main = "normal quantile plot for standarized residuals",
+       xlab = "normal scores", ylab = "std res for bmi regr on steps per day")
+qqline(pedometer_bmi$std_res)
+
+shapiro.test(pedometer_bmi$std_res)
+```
+
+```{r}
+# set up for work with y-hat values
+
+pedometer_new <- data.frame(pa = c(5,7,9,11) )
+```
+
+```{r}
+# confidence intervals for population mean of bmi for each physical activity value 
+# also gives the standard errors for this question
+
+est_mean <- predict(pedometer_bmi_regr, pedometer_new, interval = "confidence", level = .95, se.fit = T)
+
+est_mean
+```
+
+```{r}
+# confidence intervals for an individual's bmi for each physical activity value 
+# although the standard errors are correctly calculated,
+# with se.fit = T, it would stubbornly give the standard errors for 
+# estimating the mean of y, as in the previous question
+
+est_indiv <- predict(pedometer_bmi_regr, pedometer_new, interval = "prediction", level = .95)
+
+est_indiv
+```
+
+```{r}
+# summary gives R squared, 
+# anova gives sum of squares for model and residual sum of squares
+
+summary(pedometer_bmi_regr)
+
+anova(pedometer_bmi_regr)
+```
+
+
+

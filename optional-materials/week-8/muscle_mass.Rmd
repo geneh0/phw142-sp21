@@ -1,0 +1,134 @@
+---
+title: "muscle mass regr updated for 2020"
+author: "Maureen Lahiff"
+date: "April 7, 2020"
+output: word_document
+---
+```{r}
+library(tidyverse)
+library(readr)
+library(readxl)
+
+#read in data, create data frame muscle_mass
+
+muscle_mass <- read_excel(here::here("data/muscle_mass.xlsx"))
+```
+
+```{r}
+# scatterplot with least squares line with the stat.smooth argument
+# but no standard error band around line
+
+ggplot(muscle_mass, aes(y = muscle_mass, x = age)) +
+geom_point() +
+stat_smooth(method = "lm", se = F, n = 60) +
+labs(y = "muscle mass", x = "age in years",      
+         title = "cross-sectional study of women's muscle mass and age", 
+          subtitle = "n = 60 women") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+# summary statistics  
+  
+mean_muscle_mass <- mean(muscle_mass$muscle_mass)
+std_dev_muscle_mass <- sd(muscle_mass$muscle_mass)  
+c(mean_muscle_mass, std_dev_muscle_mass)
+
+mean_age <- mean(muscle_mass$age)
+std_dev_age <- sd(muscle_mass$age)  
+c(mean_age, std_dev_age)
+```
+
+```{r}
+# Pearson correlation
+
+cor(muscle_mass$muscle_mass, muscle_mass$age, method = "pearson")
+
+# test for correlation, null hyp is population rho = 0
+# with alternative = "two.sided", 
+# also calculates a confidence interval for rho using Fisher's z transformation
+
+cor.test(muscle_mass$muscle_mass, muscle_mass$age, method = "pearson", 
+           alternative = "two.sided")
+```
+
+```{r}
+# fit linear regression and save results
+
+muscle_mass_regr <- lm(muscle_mass ~ age, data = muscle_mass)
+
+summary(muscle_mass_regr)
+```
+
+```{r}
+# calcluate fitted values, residuals, and standardized residuals
+
+muscle_mass$muscle_mass_hat <- fitted(muscle_mass_regr)
+muscle_mass$resids <- residuals(muscle_mass_regr)
+muscle_mass$std_res <- rstandard(muscle_mass_regr)
+```
+
+```{r}
+# get 95% confidence intervals for population slope and intercept
+# the lower limit is labeled 2.5 % and the upper limit is labeled 97.5 %
+
+confint(muscle_mass_regr, level = .95)
+```
+
+```{r}
+# box plot of standardized residuals
+
+ggplot(muscle_mass, aes(y = std_res) ) +
+  geom_boxplot(width = 0.5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "standardized resiuals ri", x = "",      
+         title = "box plot of standardized residuals", 
+          subtitle = "regression of muscle mass on age") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+# normal quantile plot and Shapiro-Wilk test for standarized residuals
+
+qqnorm(muscle_mass$std_res, frame = FALSE,
+       main = "normal quantile plot for standarized residuals",
+       xlab = "normal scores", ylab = "std res for muscle_mass regr on age")
+qqline(muscle_mass$std_res)
+
+shapiro.test(muscle_mass$std_res)
+```
+
+```{r}
+# set up for work with y-hat values
+
+age_new <- data.frame(age = c(40,50,60,70,80) )
+
+# confidence intervals for population mean of muscle mass for each age
+# also gives the standard errors for this question
+
+est_mean <- predict(muscle_mass_regr, age_new, interval = "confidence", level = .95, se.fit = T)
+
+est_mean
+```
+
+```{r}
+# confidence intervals for an individual's muscle mass for each age
+# although the standard errors are correctly calculated,
+# with se.fit = T, it would stubbornly give the standard errors for 
+# estimating the mean of y, as in the previous question
+
+est_indiv <- predict(muscle_mass_regr, age_new, interval = "prediction", level = .95)
+
+est_indiv
+```
+
+```{r}
+# summary gives R squared, 
+# anova gives sum of squares for model and residual sum of squares
+
+summary(muscle_mass_regr)
+
+anova(muscle_mass_regr)
+```
+
+

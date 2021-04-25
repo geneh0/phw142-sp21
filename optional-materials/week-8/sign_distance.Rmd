@@ -1,0 +1,132 @@
+---
+title: "road sign legibility and age regression updated for 2020"
+author: "Maureen Lahiff"
+date: "April 11, 2020"
+output: word_document
+---
+```{r}
+library(tidyverse)
+library(readr)
+library(readxl)
+
+#read in data, create data frame sign_distance
+
+sign_distance <- read_excel(here::here("data/sign_distance.xlsx"))
+```
+
+```{r}
+# scatterplot with least squares line with the stat.smooth argument
+# but no standard error band around line
+
+ggplot(sign_distance, aes(x = age, y = distance)) +
+geom_point() +
+stat_smooth(method = "lm", se = F, n = 30) +
+labs(x = "age in years", y = " distance in feet",      
+         title = "age and distance for road sign legibility", 
+          subtitle = "n = 30 adults") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+# summary statistics
+  
+mean_age <- mean(sign_distance$age)
+std_dev_age <- sd(sign_distance$age)  
+c(mean_age, std_dev_age)
+
+mean_distance <- mean(sign_distance$distance)
+std_dev_distance <- sd(sign_distance$distance)  
+c(mean_distance, std_dev_distance)
+```
+
+```{r}
+# Pearson correlation
+  
+cor(sign_distance$distance,sign_distance$age, method = "pearson")
+
+# test for correlation, null hyp is population rho = 0
+# with alternative = "two.sided", 
+# also calculates a confidence interval for rho using Fisher's z transformation
+
+cor.test(sign_distance$distance,sign_distance$age, method = "pearson", 
+           alternative = "two.sided")
+```
+
+```{r}
+# fit linear regression and save results
+
+sign_distance_regr <- lm(distance ~ age, data = sign_distance)
+
+summary(sign_distance_regr)
+```
+
+```{r}
+# calcluate fitted values, residuals, and standardized residuals
+
+sign_distance$distance_hat <- fitted(sign_distance_regr)
+sign_distance$resids <- residuals(sign_distance_regr)
+sign_distance$std_res <- rstandard(sign_distance_regr)
+
+# get 95% confidence intervals for population slope and intercept
+# the lower limit is labeled 2.5 % and the upper limit is labeled 97.5 %
+
+confint(sign_distance_regr, level = .95)
+```
+
+```{r}
+# box plot of standardized residuals
+
+ggplot(sign_distance, aes(y = std_res) ) +
+  geom_boxplot(width = 0.5) +
+    scale_x_continuous(labels = NULL) +
+    labs(y = "standardized resiuals ri", x = "",      
+         title = "box plot of standardized residuals", 
+          subtitle = "regression of sign distance on age") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+# normal quantile plot and Shapiro-Wilk test for standarized residuals
+
+qqnorm(sign_distance$std_res, frame = FALSE,
+       main = "normal quantile plot for standarized residuals",
+       xlab = "normal scores", ylab = "std res for regr of legibility distance on age")
+qqline(sign_distance$std_res)
+
+shapiro.test(sign_distance$std_res)
+```
+
+```{r}
+# summary gives R squared, 
+# anova gives sum of squares for model and residual sum of squares
+
+summary(sign_distance_regr)
+
+anova(sign_distance_regr)
+```
+
+```{r}
+# set up for work with y-hat values
+
+age_new <- data.frame(age = c(30, 40, 50, 60, 70) )
+```
+
+```{r}
+# confidence intervals for population mean distance for each age value 
+# also gives the standard errors for this question
+
+est_mean <- predict(sign_distance_regr, age_new, interval = "confidence", level = .95, se.fit = T)
+
+est_mean
+```
+
+```{r}
+# confidence intervals for an individual's distance for each age value 
+# although the standard errors are correctly calculated,
+# with se.fit = T, it would stubbornly give the standard errors for 
+# estimating the mean of y, as in the previous question
+
+est_indiv <- predict(sign_distance_regr, age_new, interval = "prediction", level = .95)
+
+est_indiv
+```
